@@ -16,11 +16,9 @@ xBirdCoord dw 50
 
 assume  cs:code,ds:donnees,es:code,ss:pile
 
-mov ax, donnees ; Pointe vers le segment de données
-mov ds, ax
-
-
 myprog:                       ; Début du programme
+    mov ax, donnees ; Pointe vers le segment de données
+    mov ds, ax
     call Video13h
 
 start_game:
