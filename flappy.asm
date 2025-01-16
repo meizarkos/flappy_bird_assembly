@@ -8,38 +8,55 @@ include GFX.inc
 donnees ends
 
 code    segment public    ; Segment de code
+
+speed dw 1
+
+yBirdCoord dw 50
+xBirdCoord dw 50
+
 assume  cs:code,ds:donnees,es:code,ss:pile
 
-myprog:                       ; Début du programme
-    MOV ax, donnees ; Pointe vers le segment de données
-    MOV ds, ax
+mov ax, donnees ; Pointe vers le segment de données
+mov ds, ax
 
+
+myprog:                       ; Début du programme
     call Video13h
 
-    MOV cCX, 0
-    MOV cDX, 50
-    MOV col, 255
+start_game:
+    call PeekKey
 
-    call BigPixl  ; Début du jeu
+    mov DX, xBirdCoord ; problème en passant par variable
+    mov CX, yBirdCoord ; si valeur en clair c'est ok
+
+    mov Rx, DX
+    mov Ry, CX
+    mov Rw, 10
+    mov Rh, 5
+    mov col, 4
+
+    call Rectangle
+
+    mov Rx, 50
+    mov Ry, 60  
+    mov Rw, 10
+    mov Rh, 5
+    mov col, 2
+
+    call Rectangle
+
+    jmp fin
 
 
 
 
-;start_game:
-    ;call ClearScreen
+jump:
 
-    ; Dessiner l'oiseau
-    ;mov ax, 14
-    ;mov [col], ax
-    ;mov cx, 50
-    ;mov [cCX], cx
-    ;mov ax, [birdY]
-    ;mov [cDX], ax
-    ;call BigPixl
+    
 
-    ; Appliquer la gravité
-    ;add ax, [gravity]
-    ;mov [birdY], ax
+    cmp userinput, 32 ; value of espace
+    jne start_game  
+
 
     ; Vérifier si une touche est pressée pour faire sauter l'oiseau
     ;call PeekKey
