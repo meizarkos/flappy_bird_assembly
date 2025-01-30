@@ -1,79 +1,72 @@
 pile    segment stack     ; Segment de pile
 pile    ends
 
-donnees segment public    ; Segment de donnees
-; vos variables
+donnees segment public    ; Segment de donnees  
 include GFX.inc
+
+extrn imageBird:byte
+
+xBirdCoordo DW 50
+yBirdCoordo DW 50
+speed DW 1
 
 donnees ends
 
 code    segment public    ; Segment de code
 
-speed dw 1
-
-yBirdCoord dw 50
-xBirdCoord dw 50
 
 assume  cs:code,ds:donnees,es:code,ss:pile
 
 myprog:                       ; Début du programme
     mov ax, donnees ; Pointe vers le segment de données
     mov ds, ax
+
     call Video13h
 
-start_game:
-    call PeekKey
+    mov BX, offset imageBird
+    mov CX, xBirdCoordo
+    mov DX, yBirdCoordo
+    mov hX, CX
+    mov hY, DX
+    mov tempo, 3
+    call drawIcon
 
-    mov DX, xBirdCoord ; problème en passant par variable
-    mov CX, yBirdCoord ; si valeur en clair c'est ok
+action_loop:
+    call sleep
 
-    mov Rx, DX
-    mov Ry, CX
-    mov Rw, 10
-    mov Rh, 5
-    mov col, 4
+    cmp speed , 7
+    jge draw_loop
+    add speed, 1; if positive you go down
 
-    call Rectangle
-
-    mov Rx, 50
-    mov Ry, 60  
-    mov Rw, 10
-    mov Rh, 5
-    mov col, 2
-
-    call Rectangle
-
-    jmp fin
-
-
-
-
-jump:
-
+draw_loop:    
+    mov CX, speed
+    add yBirdCoordo, CX
     
+    call ClearScreen
 
-    cmp userinput, 32 ; value of espace
-    jne start_game  
+    mov BX, offset imageBird
+    mov CX, xBirdCoordo
+    mov DX, yBirdCoordo
+    mov hX, CX
+    mov hY, DX
+    call drawIcon
+    
+jump:
+    call PeekKey
+    cmp userinput, 97
+    je fin
+    cmp userinput, 32
+    jne action_loop
+    cmp speed, -8
+    jl action_loop
+    sub speed, 11 ; if negative you go up 
+    jmp action_loop
 
+delete_speed:
+    mov speed, 0
+    sub speed, 16
+    jmp action_loop
 
-    ; Vérifier si une touche est pressée pour faire sauter l'oiseau
-    ;call PeekKey
-    ;cmp userinput, 0
-    ;je no_jump
-    ;sub ax, [jump]
-    ;mov [birdY], ax
-    ;call WaitKey
-
-;no_jump:
-    ; Vérifier les collisions et mettre à jour le score
-    ; (à implémenter)
-
-    ; Attendre un court instant
-    ;mov tempo, 5
-    ;call sleep
-
-    ; Répéter le jeu
-    ;jmp start_game
 
 fin:
     mov AH,4Ch  ; 4Ch = fonction exit DOS
