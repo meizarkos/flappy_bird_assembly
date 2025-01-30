@@ -1,64 +1,72 @@
 pile    segment stack     ; Segment de pile
 pile    ends
 
-donnees segment public    ; Segment de donnees
-; vos variables
+donnees segment public    ; Segment de donnees  
 include GFX.inc
+
+extrn imageBird:byte
+
+xBirdCoordo DW 50
+yBirdCoordo DW 50
+speed DW 1
 
 donnees ends
 
 code    segment public    ; Segment de code
+
+
 assume  cs:code,ds:donnees,es:code,ss:pile
 
 myprog:                       ; Début du programme
-    MOV ax, donnees ; Pointe vers le segment de données
-    MOV ds, ax
+    mov ax, donnees ; Pointe vers le segment de données
+    mov ds, ax
 
     call Video13h
 
-    MOV cCX, 0
-    MOV cDX, 50
-    MOV col, 255
+    mov BX, offset imageBird
+    mov CX, xBirdCoordo
+    mov DX, yBirdCoordo
+    mov hX, CX
+    mov hY, DX
+    mov tempo, 3
+    call drawIcon
 
-    call BigPixl  ; Début du jeu
+action_loop:
+    call sleep
 
+    cmp speed , 7
+    jge draw_loop
+    add speed, 1; if positive you go down
 
+draw_loop:    
+    mov CX, speed
+    add yBirdCoordo, CX
+    
+    call ClearScreen
 
+    mov BX, offset imageBird
+    mov CX, xBirdCoordo
+    mov DX, yBirdCoordo
+    mov hX, CX
+    mov hY, DX
+    call drawIcon
+    
+jump:
+    call PeekKey
+    cmp userinput, 97
+    je fin
+    cmp userinput, 32
+    jne action_loop
+    cmp speed, -8
+    jl action_loop
+    sub speed, 11 ; if negative you go up 
+    jmp action_loop
 
-;start_game:
-    ;call ClearScreen
+delete_speed:
+    mov speed, 0
+    sub speed, 16
+    jmp action_loop
 
-    ; Dessiner l'oiseau
-    ;mov ax, 14
-    ;mov [col], ax
-    ;mov cx, 50
-    ;mov [cCX], cx
-    ;mov ax, [birdY]
-    ;mov [cDX], ax
-    ;call BigPixl
-
-    ; Appliquer la gravité
-    ;add ax, [gravity]
-    ;mov [birdY], ax
-
-    ; Vérifier si une touche est pressée pour faire sauter l'oiseau
-    ;call PeekKey
-    ;cmp userinput, 0
-    ;je no_jump
-    ;sub ax, [jump]
-    ;mov [birdY], ax
-    ;call WaitKey
-
-;no_jump:
-    ; Vérifier les collisions et mettre à jour le score
-    ; (à implémenter)
-
-    ; Attendre un court instant
-    ;mov tempo, 5
-    ;call sleep
-
-    ; Répéter le jeu
-    ;jmp start_game
 
 fin:
     mov AH,4Ch  ; 4Ch = fonction exit DOS
