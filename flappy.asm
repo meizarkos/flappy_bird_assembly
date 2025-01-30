@@ -28,7 +28,7 @@ myprog:                       ; Début du programme
     mov DX, yBirdCoordo
     mov hX, CX
     mov hY, DX
-    mov tempo, 3
+    mov tempo, 5
     call drawIcon
 
 action_loop:
@@ -59,7 +59,7 @@ jump:
     jne action_loop
     cmp speed, -8
     jl action_loop
-    sub speed, 11 ; if negative you go up 
+    sub speed, 8 ; if negative you go up 
     jmp action_loop
 
 delete_speed:
