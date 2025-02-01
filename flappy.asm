@@ -6,6 +6,7 @@ include GFX.inc
 
 extrn imageBird:byte
 extrn imageSky:byte
+extrn imagePress:byte
 
 xBirdCoordo DW 50
 yBirdCoordo DW 50
@@ -22,13 +23,37 @@ myprog:                       ; Début du programme
     mov ax, donnees ; Pointe vers le segment de données
     mov ds, ax
 
-    call Video13h 
+    call Video13h
+
+screen_start:     
+
+    ; press space to play
+    mov hY,0
+    mov hX,0
+    mov BX, offset imageSky
+    call drawIcon
+
+    mov hY,40
+    mov hX,80
+    mov BX, offset imagePress
+    call drawIcon
+
+    mov hY,50
+    mov hX,50
+    mov BX, offset imageBird
+    call drawIcon
+
+    call WaitKey
+    cmp userinput, 32
+    jne screen_start
+    call ClearScreen
+
+start_game:
 
     mov BX, offset imageSky
     mov hX, 0
     mov hY, 0
     call drawIcon
-    ;call sleep
 
     mov BX, offset imageBird
     mov CX, xBirdCoordo
@@ -37,21 +62,30 @@ myprog:                       ; Début du programme
     mov hY, DX
     mov tempo, 5
     call drawIcon
-    ;call sleep
 
 action_loop:
-
-    ;call sleep
-
     cmp speed , 7
-    jge draw_loop
+    jge limit_place
     add speed, 1; if positive you go down
+
+limit_place:    
+    cmp yBirdCoordo, 5 ; if at top of the screen dont go up
+    jle change_pos_if_speed_pos
+    cmp yBirdCoordo, 145 ; if at bottom of the screen dont go down
+    jge change_neg_pos
+    jmp draw_loop
+
+change_neg_pos:
+    mov speed, -1
+    jmp draw_loop          
+
+change_pos_if_speed_pos:
+    mov speed, 1
+    jmp draw_loop
 
 draw_loop:    
     mov CX, speed
     add yBirdCoordo, CX
-
-    ;call ClearScreen
 
     mov BX, offset imageBird
     mov CX, xBirdCoordo
@@ -77,13 +111,15 @@ jump:
     cmp userinput, 97
     je fin
     cmp userinput, 32
-    jne action_loop
+    jne goto_draw_loop
     cmp speed, -8
-    jl action_loop
+    jl goto_draw_loop
     sub speed, 8 ; if negative you go up 
+goto_draw_loop:  ; pour éviter jne is too far to jump
     jmp action_loop
 
 fin:
+    
     mov AH,4Ch  ; 4Ch = fonction exit DOS
     mov AL,00h  ; code de sortie 0 (OK)
     int 21h
