@@ -8,6 +8,8 @@ extrn imageBird:byte
 extrn imageSky:byte
 extrn imagePress:byte
 
+extrn imageQuit:byte
+
 xBirdCoordo DW 50
 yBirdCoordo DW 50
 speed DW 1
@@ -49,7 +51,6 @@ screen_start:
     call ClearScreen
 
 start_game:
-
     mov BX, offset imageSky
     mov hX, 0
     mov hY, 0
@@ -109,7 +110,7 @@ draw_loop:
 jump:
     call PeekKey
     cmp userinput, 97
-    je fin
+    je play_again_draw_choice
     cmp userinput, 32
     jne goto_draw_loop
     cmp speed, -8
@@ -118,8 +119,23 @@ jump:
 goto_draw_loop:  ; pour éviter jne is too far to jump
     jmp action_loop
 
+play_again_draw_choice:
+    mov BX, offset imageQuit
+    mov hX, 50
+    mov hY, 175
+    call drawIcon
+play_again:
+    call WaitKey
+    cmp userinput, 114 ; r
+    je jump_to_restart
+    cmp userinput, 113 ; q
+    je fin
+    jmp play_again
+jump_to_restart:
+    call ClearScreen
+    jmp start_game    
+
 fin:
-    
     mov AH,4Ch  ; 4Ch = fonction exit DOS
     mov AL,00h  ; code de sortie 0 (OK)
     int 21h
