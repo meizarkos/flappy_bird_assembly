@@ -84,27 +84,29 @@ change_pos_if_speed_pos:
     mov speed, 1
     jmp draw_loop
 
-draw_loop:    
+draw_loop:
+    cmp speed,0
+    je jump    ; no need to draw in this case
     mov CX, speed
-    add yBirdCoordo, CX
+    add yBirdCoordo, CX ; new Y position of the bird based on speed ; best solution to store old position
 
     mov BX, offset imageBird
     mov CX, xBirdCoordo
     mov DX, yBirdCoordo
     mov hX, CX
     mov hY, DX
-    call drawIcon
+    call drawIcon  ; draw new bird
     call sleep
 
     sub DX,30
 
-    mov rX, CX
+    mov rX, CX ; 2 cas speed positive ou négatif
     mov rY, DX
     mov rW, 30
     mov rH, 30
     mov col, 102
 
-    call fillRect
+    call fillRect ; delete old bird
 
     
 jump:
