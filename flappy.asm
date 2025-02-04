@@ -87,10 +87,16 @@ change_pos_if_speed_pos:
 
 draw_loop:
     cmp speed,0
-    je jump    ; no need to draw in this case
-    mov CX, speed
+    je goto_action    ; no need to draw in this case
+    jmp next_draw_loop
+
+goto_action:
+    jmp jump
+
+next_draw_loop:
     mov DX, yBirdCoordo
     mov oldYBirdCoordo, DX
+    mov CX, speed
     add yBirdCoordo, CX ; new Y position of the bird based on speed ; best solution to store old position
 
     mov BX, offset imageBird
@@ -101,20 +107,42 @@ draw_loop:
     call drawIcon  ; draw new bird
     call sleep
 
-
     ;delete old bird based on old position
+    cmp speed,0
+    je jump
+    jl redraw_for_neg_speed  ; we go up
+    jg redraw_for_pos_speed  ; we go down
 
-    sub DX,30
-
-    mov rX, CX ; 2 cas speed positive ou négatif
-    mov rY, DX
+redraw_for_neg_speed:   ; monte donc old > new
+    mov DX, oldYBirdCoordo 
+    mov CX, yBirdCoordo
+    sub DX,CX ; taille to draw the rectangle
+    sub CX,30
+    add DX,30
+    mov BX, xBirdCoordo
+    mov rX, BX
+    mov rY, CX
     mov rW, 30
-    mov rH, 30
+    mov rH, DX
     mov col, 102
 
     call fillRect ; delete old bird
+    jmp jump
 
-    
+redraw_for_pos_speed: ; descend donc old < new
+    mov CX, oldYBirdCoordo 
+    mov DX, yBirdCoordo
+    sub DX,CX
+    mov BX, xBirdCoordo 
+    mov rX, BX
+    mov rY, CX
+    mov rW, 30
+    mov rH, DX
+    mov col, 102
+
+    call fillRect ; delete old bird
+    jmp jump
+
 jump:
     call PeekKey
     cmp userinput, 97
