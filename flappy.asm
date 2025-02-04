@@ -12,6 +12,7 @@ extrn imageQuit:byte
 
 xBirdCoordo DW 50
 yBirdCoordo DW 50
+oldYBirdCoordo DW 50
 speed DW 1
 
 donnees ends
@@ -88,6 +89,8 @@ draw_loop:
     cmp speed,0
     je jump    ; no need to draw in this case
     mov CX, speed
+    mov DX, yBirdCoordo
+    mov oldYBirdCoordo, DX
     add yBirdCoordo, CX ; new Y position of the bird based on speed ; best solution to store old position
 
     mov BX, offset imageBird
@@ -97,6 +100,9 @@ draw_loop:
     mov hY, DX
     call drawIcon  ; draw new bird
     call sleep
+
+
+    ;delete old bird based on old position
 
     sub DX,30
 
