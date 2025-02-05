@@ -36,7 +36,7 @@ screen_start:
     mov rX,0
     mov rY,0
     mov rH,175 
-    mov rW,250
+    mov rW,300
     mov col,102
     call fillRect
 
@@ -59,7 +59,7 @@ start_game:
     mov rX,0
     mov rY,0
     mov rH,168
-    mov rW,250
+    mov rW,300
     mov col,102
     call fillRect
 
@@ -71,7 +71,7 @@ start_game:
     call drawIcon
 
 action_loop:
-    cmp speed , 7
+    cmp speed , 4
     jge limit_place
     add speed, 1; if positive you go down
 
