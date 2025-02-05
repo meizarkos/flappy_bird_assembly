@@ -5,13 +5,13 @@ donnees segment public    ; Segment de donnees
 include GFX.inc
 
 extrn imageBird:byte
-extrn imageSky:byte
 extrn imagePress:byte
 
 extrn imageQuit:byte
 
 xBirdCoordo DW 50
 yBirdCoordo DW 50
+oldYBirdCoordo DW 50
 speed DW 1
 
 donnees ends
@@ -20,6 +20,8 @@ code    segment public    ; Segment de code
 
 
 assume  cs:code,ds:donnees,es:code,ss:pile
+
+;background color = 102
 
 myprog:                       ; Début du programme
     mov ax, donnees ; Pointe vers le segment de données
@@ -30,10 +32,13 @@ myprog:                       ; Début du programme
 screen_start:     
 
     ; press space to play
-    mov hY,0
-    mov hX,0
-    mov BX, offset imageSky
-    call drawIcon
+    ;replace that by a big rectangle
+    mov rX,0
+    mov rY,0
+    mov rH,175 
+    mov rW,250
+    mov col,102
+    call fillRect
 
     mov hY,40
     mov hX,80
@@ -51,16 +56,17 @@ screen_start:
     call ClearScreen
 
 start_game:
-    mov BX, offset imageSky
-    mov hX, 0
-    mov hY, 0
-    call drawIcon
+    mov rX,0
+    mov rY,0
+    mov rH,168
+    mov rW,250
+    mov col,102
+    call fillRect
 
     mov BX, offset imageBird
-    mov CX, xBirdCoordo
-    mov DX, yBirdCoordo
-    mov hX, CX
-    mov hY, DX
+    mov yBirdCoordo, 50
+    mov hX, 50
+    mov hY, 50
     mov tempo, 5
     call drawIcon
 
@@ -84,29 +90,63 @@ change_pos_if_speed_pos:
     mov speed, 1
     jmp draw_loop
 
-draw_loop:    
+draw_loop:
+    cmp speed,0
+    je goto_action    ; no need to draw in this case
+    jmp next_draw_loop
+
+goto_action:
+    jmp jump
+
+next_draw_loop:
+    mov DX, yBirdCoordo
+    mov oldYBirdCoordo, DX
     mov CX, speed
-    add yBirdCoordo, CX
+    add yBirdCoordo, CX ; new Y position of the bird based on speed ; best solution to store old position
 
     mov BX, offset imageBird
     mov CX, xBirdCoordo
     mov DX, yBirdCoordo
     mov hX, CX
     mov hY, DX
-    call drawIcon
+    call drawIcon  ; draw new bird
     call sleep
 
-    sub DX,30
+    ;delete old bird based on old position
+    cmp speed,0
+    je jump
+    jl redraw_for_neg_speed  ; we go up
+    jg redraw_for_pos_speed  ; we go down
 
-    mov rX, CX
-    mov rY, DX
+redraw_for_neg_speed:   ; monte donc old > new
+    mov DX, oldYBirdCoordo 
+    mov CX, yBirdCoordo
+    sub DX,CX ; taille to draw the rectangle
+    add CX,22 ; offset the y coordo at the bottom
+    mov BX, xBirdCoordo
+    mov rX, BX
+    mov rY, CX
     mov rW, 30
-    mov rH, 30
+    mov rH, DX
     mov col, 102
 
-    call fillRect
+    call fillRect ; delete old bird
+    jmp jump
 
-    
+redraw_for_pos_speed: ; descend donc old < new
+    mov CX, oldYBirdCoordo 
+    mov DX, yBirdCoordo
+    sub DX,CX
+    mov BX, xBirdCoordo 
+    mov rX, BX
+    mov rY, CX
+    mov rW, 30
+    mov rH, DX
+    mov col, 102
+
+    call fillRect ; delete old bird
+    jmp jump
+
 jump:
     call PeekKey
     cmp userinput, 97
@@ -122,7 +162,7 @@ goto_draw_loop:  ; pour éviter jne is too far to jump
 play_again_draw_choice:
     mov BX, offset imageQuit
     mov hX, 50
-    mov hY, 175
+    mov hY, 185
     call drawIcon
 play_again:
     call WaitKey
