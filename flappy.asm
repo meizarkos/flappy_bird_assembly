@@ -9,7 +9,7 @@ extrn imagePress:byte
 
 extrn imageQuit:byte
 
-xBirdCoordo DW 50
+xBirdCoordo DW 40
 yBirdCoordo DW 50
 oldYBirdCoordo DW 50
 speed DW 1
@@ -46,7 +46,7 @@ screen_start:
     call drawIcon
 
     mov hY,50
-    mov hX,50
+    mov hX,40
     mov BX, offset imageBird
     call drawIcon
 
@@ -65,21 +65,21 @@ start_game:
 
     mov BX, offset imageBird
     mov yBirdCoordo, 50
-    mov hX, 50
+    mov hX, 40
     mov hY, 50
     mov tempo, 5
     call drawIcon
 
 action_loop:
-    cmp speed , 4
+    cmp speed , 3
     jge limit_place
     add speed, 1; if positive you go down
 
-limit_place:    
+limit_place:
     cmp yBirdCoordo, 5 ; if at top of the screen dont go up
-    jle change_pos_if_speed_pos
+    jle change_pos_if_speed_pos ; is at the top
     cmp yBirdCoordo, 145 ; if at bottom of the screen dont go down
-    jge change_neg_pos
+    jge change_neg_pos ; is at the bottom
     jmp draw_loop
 
 change_neg_pos:
@@ -137,6 +137,7 @@ redraw_for_pos_speed: ; descend donc old < new
     mov CX, oldYBirdCoordo 
     mov DX, yBirdCoordo
     sub DX,CX
+    sub DX,1
     mov BX, xBirdCoordo 
     mov rX, BX
     mov rY, CX
