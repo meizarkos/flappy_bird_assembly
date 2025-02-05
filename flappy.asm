@@ -5,7 +5,6 @@ donnees segment public    ; Segment de donnees
 include GFX.inc
 
 extrn imageBird:byte
-extrn imageSky:byte
 extrn imagePress:byte
 
 extrn imageQuit:byte
@@ -22,6 +21,8 @@ code    segment public    ; Segment de code
 
 assume  cs:code,ds:donnees,es:code,ss:pile
 
+;background color = 102
+
 myprog:                       ; Début du programme
     mov ax, donnees ; Pointe vers le segment de données
     mov ds, ax
@@ -31,10 +32,13 @@ myprog:                       ; Début du programme
 screen_start:     
 
     ; press space to play
-    mov hY,0
-    mov hX,0
-    mov BX, offset imageSky
-    call drawIcon
+    ;replace that by a big rectangle
+    mov rX,0
+    mov rY,0
+    mov rH,175 
+    mov rW,250
+    mov col,102
+    call fillRect
 
     mov hY,40
     mov hX,80
@@ -52,16 +56,17 @@ screen_start:
     call ClearScreen
 
 start_game:
-    mov BX, offset imageSky
-    mov hX, 0
-    mov hY, 0
-    call drawIcon
+    mov rX,0
+    mov rY,0
+    mov rH,168
+    mov rW,250
+    mov col,102
+    call fillRect
 
     mov BX, offset imageBird
-    mov CX, xBirdCoordo
-    mov DX, yBirdCoordo
-    mov hX, CX
-    mov hY, DX
+    mov yBirdCoordo, 50
+    mov hX, 50
+    mov hY, 50
     mov tempo, 5
     call drawIcon
 
@@ -117,8 +122,7 @@ redraw_for_neg_speed:   ; monte donc old > new
     mov DX, oldYBirdCoordo 
     mov CX, yBirdCoordo
     sub DX,CX ; taille to draw the rectangle
-    sub CX,30
-    add DX,30
+    add CX,22 ; offset the y coordo at the bottom
     mov BX, xBirdCoordo
     mov rX, BX
     mov rY, CX
@@ -158,7 +162,7 @@ goto_draw_loop:  ; pour éviter jne is too far to jump
 play_again_draw_choice:
     mov BX, offset imageQuit
     mov hX, 50
-    mov hY, 175
+    mov hY, 185
     call drawIcon
 play_again:
     call WaitKey
