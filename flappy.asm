@@ -8,6 +8,7 @@ extrn imageBird:byte
 extrn imagePress:byte
 
 extrn imageQuit:byte
+extrn imageGround:byte
 
 xBirdCoordo DW 40
 yBirdCoordo DW 50
@@ -62,6 +63,11 @@ start_game:
     mov rW,250
     mov col,102
     call fillRect
+
+    mov BX, offset imageGround
+    mov hX,1
+    mov hY,160
+    call drawIcon
 
     mov BX, offset imageBird
     mov yBirdCoordo, 50
