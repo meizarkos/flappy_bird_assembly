@@ -10,7 +10,7 @@ extrn imagePress:byte
 extrn imageQuit:byte
 extrn imageGround:byte
 
-xBirdCoordo DW 40
+xBirdCoordo DW 25
 yBirdCoordo DW 50
 oldYBirdCoordo DW 50
 speed DW 1
@@ -71,7 +71,7 @@ start_game:
 
     mov BX, offset imageBird
     mov yBirdCoordo, 50
-    mov hX, 40
+    mov hX, 25
     mov hY, 50
     mov tempo, 5
     call drawIcon
@@ -84,7 +84,7 @@ action_loop:
 limit_place:
     cmp yBirdCoordo, 5 ; if at top of the screen dont go up
     jle change_pos_if_speed_pos ; is at the top
-    cmp yBirdCoordo, 136 ; 160 - heigt if at bottom of the screen dont go down
+    cmp yBirdCoordo, 145 ; 160 - heigt if at bottom of the screen dont go down
     jge change_neg_pos ; is at the bottom
     jmp draw_loop
 
@@ -128,7 +128,7 @@ redraw_for_neg_speed:   ; monte donc old > new
     mov DX, oldYBirdCoordo 
     mov CX, yBirdCoordo
     sub DX,CX ; taille to draw the rectangle
-    add CX,22 ; offset the y coordo at the bottom
+    add CX,14 ; offset the y coordo at the bottom
     mov BX, xBirdCoordo
     mov rX, BX
     mov rY, CX
