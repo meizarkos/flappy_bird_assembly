@@ -35,8 +35,8 @@ screen_start:
     ;replace that by a big rectangle
     mov rX,0
     mov rY,0
-    mov rH,175 
-    mov rW,300
+    mov rH,160
+    mov rW,250
     mov col,102
     call fillRect
 
@@ -58,8 +58,8 @@ screen_start:
 start_game:
     mov rX,0
     mov rY,0
-    mov rH,168
-    mov rW,300
+    mov rH,160
+    mov rW,250
     mov col,102
     call fillRect
 
@@ -78,7 +78,7 @@ action_loop:
 limit_place:
     cmp yBirdCoordo, 5 ; if at top of the screen dont go up
     jle change_pos_if_speed_pos ; is at the top
-    cmp yBirdCoordo, 145 ; if at bottom of the screen dont go down
+    cmp yBirdCoordo, 136 ; 160 - heigt if at bottom of the screen dont go down
     jge change_neg_pos ; is at the bottom
     jmp draw_loop
 
