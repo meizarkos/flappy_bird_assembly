@@ -9,6 +9,13 @@ extrn imagePress:byte
 
 extrn imageQuit:byte
 extrn imageGround:byte
+extrn imagePipe:byte
+extrn imagePipeL:byte
+extrn imagePipeM:byte
+extrn imagePipeS:byte
+extrn imagePipeLReverse:byte
+extrn imagePipeMReverse:byte
+extrn imagePipeSReverse:byte
 
 xBirdCoordo DW 25
 yBirdCoordo DW 50
@@ -51,10 +58,15 @@ screen_start:
     mov BX, offset imageBird
     call drawIcon
 
+    mov hY,50
+    mov hX,180
+    mov BX, offset imagePipeSReverse
+    call drawIcon
+
     call WaitKey
     cmp userinput, 32
     jne screen_start
-    call ClearScreen
+    call ClearScreen    
 
 start_game:
     mov rX,0
