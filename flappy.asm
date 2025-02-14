@@ -162,7 +162,7 @@ jump:
     jne goto_draw_loop
     cmp speed, -8
     jl goto_draw_loop
-    sub speed, 8 ; if negative you go up 
+    sub speed, 8 ; if negative you go up ; jump force
 goto_draw_loop:  ; pour éviter jne is too far to jump
     jmp action_loop
 
