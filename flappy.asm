@@ -22,6 +22,13 @@ yBirdCoordo DW 50
 oldYBirdCoordo DW 50
 speed DW 1
 
+xPipeCoordo DW 230
+heighReversePipe DW 58
+heighPipe DW 58
+
+widthPipe DW 20
+speedPipe DW 3
+
 donnees ends
 
 code    segment public    ; Segment de code
@@ -58,11 +65,6 @@ screen_start:
     mov BX, offset imageBird
     call drawIcon
 
-    mov hY,50
-    mov hX,180
-    mov BX, offset imagePipeSReverse
-    call drawIcon
-
     call WaitKey
     cmp userinput, 32
     jne screen_start
@@ -88,11 +90,110 @@ start_game:
     mov tempo, 5
     call drawIcon
 
+    mov xPipeCoordo, 230
+    mov heighPipe, 58
+    mov heighReversePipe, 58
+    mov BX, offset imagePipeMReverse
+    mov hX, 230
+    mov hY, 0
+    call drawIcon
+
+    mov BX, offset imagePipeM
+    mov CX,160
+    sub CX, heighPipe
+    mov hX, 230
+    mov hY, CX
+    call drawIcon
+
 action_loop:
     cmp speed , 3
-    jge limit_place
+    jge make_pipe_move
     add speed, 1; if positive you go down
+    jmp make_pipe_move
 
+make_pipe_move:
+    mov CX, speedPipe
+    sub xPipeCoordo, CX ; new X for both pipes
+    
+    mov BX, offset imagePipeMReverse
+    mov CX, xPipeCoordo
+    mov hX, CX
+    mov hY, 0
+    call drawIcon
+
+    ; delete old reverse pipe
+    mov BX, xPipeCoordo
+    add BX, widthPipe
+    mov CX,speedPipe
+    sub CX,1
+    mov DX, heighReversePipe
+    sub DX,1
+    mov rX, BX
+    mov rY, 0
+    mov rW, CX
+    mov rH, DX
+    mov col, 102
+    call fillRect
+
+    ; draw new pipe
+    mov CX, xPipeCoordo
+    mov BX, offset imagePipeM
+    mov DX,160
+    sub DX, heighPipe
+    mov hX, CX
+    mov hY, DX ; decal the Y to size of the pipe, no problem for reverse its always 0
+    call drawIcon
+
+    ;delete old pipe we know that pipe is always at the bottom : 160 - height
+    mov CX,speedPipe
+    sub CX,1
+    mov rW, CX
+
+    mov BX, xPipeCoordo
+    add BX, widthPipe
+    mov DX, heighPipe
+    sub DX,1
+    mov CX,160
+    sub CX, heighPipe
+
+    mov rX, BX
+    mov rY, CX
+    mov rH, DX
+    mov col, 102
+    call fillRect
+
+    cmp xPipeCoordo, 2
+    jle restart_pipe
+    jmp hitbox_pipe
+
+restart_pipe:
+    ; add score here
+    mov rX, 2
+    mov rY, 0
+    mov rH, 160
+    mov rw, 20
+    mov col, 102
+    call fillRect
+    mov xPipeCoordo, 230
+
+hitbox_pipe:
+    mov CX, xBirdCoordo ; + 18 to get the right side of the bird
+    add CX, 18
+    cmp xPipeCoordo, CX ; check if x collide
+    jge limit_place ; if not go to the next check
+    
+    mov DX, yBirdCoordo ; + 14 to get the bottom of the bird
+    cmp DX, heighReversePipe
+    jl go_to_restart
+    add DX, 14
+    mov CX, 160
+    sub CX, heighPipe
+    cmp DX, CX
+    jg go_to_restart
+    jmp limit_place
+
+go_to_restart:
+    jmp play_again_draw_choice
 limit_place:
     cmp yBirdCoordo, 5 ; if at top of the screen dont go up
     jle change_pos_if_speed_pos ; is at the top
