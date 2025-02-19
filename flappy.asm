@@ -8,6 +8,7 @@ extrn imageBird:byte
 extrn imagePress:byte
 
 extrn imageQuit:byte
+extrn imageGameOver:byte
 extrn imageGround:byte
 extrn imagePipe:byte
 extrn imagePipeL:byte
@@ -280,8 +281,14 @@ goto_draw_loop:  ; pour éviter jne is too far to jump
     jmp action_loop
 
 play_again_draw_choice:
+
+    mov BX, offset imageGameOver
+    mov hX, 70
+    mov hY, 140
+    call drawIcon
+
     mov BX, offset imageQuit
-    mov hX, 50
+    mov hX, 60
     mov hY, 185
     call drawIcon
 play_again:
