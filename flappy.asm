@@ -29,7 +29,9 @@ heighReversePipe DW 58
 heighPipe DW 58
 
 widthPipe DW 20
-speedPipe DW 3
+speedPipe DW 1
+currentIndex DW 0
+tab DW 6 dup (1,2,3,4,6,12)
 
 pipeState DW 1
 
@@ -102,6 +104,7 @@ start_game:
     call drawIcon
 
     mov xPipeCoordo, 230
+    mov speedPipe, 1
     
     mov xScore, 260
     mov yScore, 30
@@ -224,6 +227,20 @@ restart_pipe:
     mov CX, pipeStateJump
     mov pipeState, CX
 
+    ;speed gestion
+
+    mov BX, offset tab
+    add BX, currentIndex
+    mov CX, byte ptr [BX]
+    mov speedPipe, CX
+    inc currentIndex
+    cmp currentIndex, 6
+    jge restart_index
+    jmp score_gestion
+restart_index:
+    mov currentIndex, 0    
+
+score_gestion:
     ;score gestion
 
     mov CX, xScore ; draw score
@@ -251,16 +268,16 @@ hitbox_pipe:
     add CX, 18
     cmp xPipeCoordo, CX ; check if x collide
     jge limit_place ; if not go to the next check
-    
+
     mov DX, yBirdCoordo ; + 14 to get the bottom of the bird
     add DX, 1
     cmp DX, heighReversePipe
-    jl go_to_restart
+    ;jl go_to_restart
     add DX, 12
     mov CX, 160
     sub CX, heighPipe
     cmp DX, CX
-    jg go_to_restart
+    ;jg go_to_restart
     jmp limit_place
 
 go_to_restart:

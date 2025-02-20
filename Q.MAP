@@ -2,10 +2,10 @@
 
  Start  Stop   Length Name                   Class
  00000H 00000H 00000H PILE                   
- 00000H 0864BH 0864CH DONNEES                
- 08650H 08BC5H 00576H CODE                   
+ 00000H 083FBH 083FCH DONNEES                
+ 08400H 089F5H 005F6H CODE                   
 
-Program entry point at 0865:0000
+Program entry point at 0840:0000
 
 Unresolved externals:
 
