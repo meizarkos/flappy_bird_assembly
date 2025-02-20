@@ -31,6 +31,10 @@ heighPipe DW 58
 widthPipe DW 20
 speedPipe DW 3
 
+pipeState DW 1
+
+pipeStateJump DW 1
+
 xScore DW 260
 yScore DW 30
 
@@ -98,19 +102,19 @@ start_game:
     call drawIcon
 
     mov xPipeCoordo, 230
-    mov heighPipe, 58
-    mov heighReversePipe, 58
-    mov BX, offset imagePipeMReverse
-    mov hX, 230
-    mov hY, 0
-    call drawIcon
+    ;mov heighPipe, 58
+    ;mov heighReversePipe, 58
+    ;mov BX, offset imagePipeMReverse
+    ;mov hX, 230
+    ;mov hY, 0
+    ;call drawIcon
 
-    mov BX, offset imagePipeM
-    mov CX,160
-    sub CX, heighPipe
-    mov hX, 230
-    mov hY, CX
-    call drawIcon
+    ;mov BX, offset imagePipeM
+    ;mov CX,160
+    ;sub CX, heighPipe
+    ;mov hX, 230
+    ;mov hY, CX
+    ;call drawIcon
 
     mov xScore, 260
     mov yScore, 30
@@ -129,7 +133,28 @@ make_pipe_move:
     mov CX, speedPipe
     sub xPipeCoordo, CX ; new X for both pipes
     
+    cmp pipeState, 1
+    je pipeReverseL
+    cmp pipeState, 2
+    je pipeReverseM
+    cmp pipeState, 3
+    je pipeReverseS
+
+pipeReverseL:
+    mov BX, offset imagePipeLReverse
+    mov heighReversePipe, 90
+    jmp suite_make_pipe_move_reverse
+
+pipeReverseM:
     mov BX, offset imagePipeMReverse
+    mov heighReversePipe, 58
+    jmp suite_make_pipe_move_reverse
+
+pipeReverseS:
+    mov BX, offset imagePipeSReverse
+    mov heighReversePipe, 29
+
+suite_make_pipe_move_reverse:
     mov CX, xPipeCoordo
     mov hX, CX
     mov hY, 0
@@ -149,9 +174,30 @@ make_pipe_move:
     mov col, 102
     call fillRect
 
-    ; draw new pipe
-    mov CX, xPipeCoordo
+    cmp pipeState, 1
+    je pipeS
+    cmp pipeState, 2
+    je pipeM
+    cmp pipeState, 3
+    je pipeL
+
+pipeL:
+    mov BX, offset imagePipeL
+    mov heighPipe, 90
+    jmp suite_make_pipe_move
+
+pipeM:
     mov BX, offset imagePipeM
+    mov heighPipe, 58
+    jmp suite_make_pipe_move
+
+pipeS:
+    mov BX, offset imagePipeS
+    mov heighPipe, 29
+
+suite_make_pipe_move:
+    
+    mov CX, xPipeCoordo
     mov DX,160
     sub DX, heighPipe
     mov hX, CX
@@ -179,7 +225,7 @@ make_pipe_move:
     cmp xPipeCoordo, 2
     jle restart_pipe
     jmp hitbox_pipe
-
+    
 restart_pipe:
     mov rX, 2 ; delete the pipe who reach end screen
     mov rY, 0
@@ -188,6 +234,8 @@ restart_pipe:
     mov col, 102
     call fillRect
     mov xPipeCoordo, 230
+    mov CX, pipeStateJump
+    mov pipeState, CX
 
     ;score gestion
 
@@ -308,9 +356,19 @@ jump:
     je play_again_draw_choice
     cmp userinput, 32
     jne goto_draw_loop
+    inc pipeStateJump
+    cmp pipeStateJump, 4
+    jge restart_random_pipe
+    jmp compare_speed
+
+restart_random_pipe:
+    mov pipeStateJump, 1
+
+compare_speed:
     cmp speed, -8
     jl goto_draw_loop
-    sub speed, 8 ; if negative you go up ; jump force
+    sub speed, 8
+
 goto_draw_loop:  ; pour éviter jne is too far to jump
     jmp action_loop
 
