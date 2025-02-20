@@ -229,7 +229,7 @@ suite_make_pipe_move:
 restart_pipe:
     mov rX, 2 ; delete the pipe who reach end screen
     mov rY, 0
-    mov rH, 160
+    mov rH, 159
     mov rw, 20
     mov col, 102
     call fillRect
@@ -266,6 +266,7 @@ hitbox_pipe:
     jge limit_place ; if not go to the next check
     
     mov DX, yBirdCoordo ; + 14 to get the bottom of the bird
+    sub DX, 1
     cmp DX, heighReversePipe
     jl go_to_restart
     add DX, 14
@@ -324,6 +325,7 @@ redraw_for_neg_speed:   ; monte donc old > new
     mov DX, oldYBirdCoordo 
     mov CX, yBirdCoordo
     sub DX,CX ; taille to draw the rectangle
+    sub DX, 1
     add CX,14 ; offset the y coordo at the bottom
     mov BX, xBirdCoordo
     mov rX, BX
@@ -339,7 +341,7 @@ redraw_for_pos_speed: ; descend donc old < new
     mov CX, oldYBirdCoordo 
     mov DX, yBirdCoordo
     sub DX,CX
-    sub DX,1
+    sub DX, 1
     mov BX, xBirdCoordo 
     mov rX, BX
     mov rY, CX
