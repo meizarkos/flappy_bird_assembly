@@ -17,6 +17,7 @@ extrn imagePipeS:byte
 extrn imagePipeLReverse:byte
 extrn imagePipeMReverse:byte
 extrn imagePipeSReverse:byte
+extrn imageScore:byte
 
 xBirdCoordo DW 25
 yBirdCoordo DW 50
@@ -29,6 +30,11 @@ heighPipe DW 58
 
 widthPipe DW 20
 speedPipe DW 3
+
+xScore DW 260
+yScore DW 30
+
+; color 8
 
 donnees ends
 
@@ -106,6 +112,13 @@ start_game:
     mov hY, CX
     call drawIcon
 
+    mov xScore, 260
+    mov yScore, 30
+    mov BX, offset imageScore
+    mov hX, 260
+    mov hY, 10
+    call drawIcon
+
 action_loop:
     cmp speed , 3
     jge make_pipe_move
@@ -168,14 +181,35 @@ make_pipe_move:
     jmp hitbox_pipe
 
 restart_pipe:
-    ; add score here
-    mov rX, 2
+    mov rX, 2 ; delete the pipe who reach end screen
     mov rY, 0
     mov rH, 160
     mov rw, 20
     mov col, 102
     call fillRect
     mov xPipeCoordo, 230
+
+    ;score gestion
+
+    mov CX, xScore ; draw score
+    mov DX, yScore
+    mov cCX, CX
+    mov cDx, DX
+    mov col, 102
+    call BigPixl
+
+    add xScore,2
+    cmp xScore, 305
+    jge redirect_score  
+    cmp xScore, 280
+    jne hitbox_pipe ; add 4 only if x is not equal to 261
+    add xScore,6
+    jmp hitbox_pipe
+
+redirect_score:
+    mov xScore, 260
+    add yScore, 5
+    jmp hitbox_pipe
 
 hitbox_pipe:
     mov CX, xBirdCoordo ; + 18 to get the right side of the bird

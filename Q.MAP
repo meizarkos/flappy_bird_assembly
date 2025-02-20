@@ -1,0 +1,14 @@
+
+
+ Start  Stop   Length Name                   Class
+ 00000H 00000H 00000H PILE                   
+ 00000H 0864BH 0864CH DONNEES                
+ 08650H 08BC5H 00576H CODE                   
+
+Program entry point at 0865:0000
+
+Unresolved externals:
+
+
+IMAGEPIPE in file(s): 
+ FLAPPY.OBJ(FLAPPY.ASM)
