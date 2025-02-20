@@ -102,20 +102,7 @@ start_game:
     call drawIcon
 
     mov xPipeCoordo, 230
-    ;mov heighPipe, 58
-    ;mov heighReversePipe, 58
-    ;mov BX, offset imagePipeMReverse
-    ;mov hX, 230
-    ;mov hY, 0
-    ;call drawIcon
-
-    ;mov BX, offset imagePipeM
-    ;mov CX,160
-    ;sub CX, heighPipe
-    ;mov hX, 230
-    ;mov hY, CX
-    ;call drawIcon
-
+    
     mov xScore, 260
     mov yScore, 30
     mov BX, offset imageScore
@@ -266,10 +253,10 @@ hitbox_pipe:
     jge limit_place ; if not go to the next check
     
     mov DX, yBirdCoordo ; + 14 to get the bottom of the bird
-    sub DX, 1
+    add DX, 1
     cmp DX, heighReversePipe
     jl go_to_restart
-    add DX, 14
+    add DX, 12
     mov CX, 160
     sub CX, heighPipe
     cmp DX, CX
