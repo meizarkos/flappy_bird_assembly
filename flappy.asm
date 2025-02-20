@@ -228,10 +228,9 @@ restart_pipe:
     mov pipeState, CX
 
     ;speed gestion
-
     mov BX, offset tab
     add BX, currentIndex
-    mov CX, byte ptr [BX]
+    mov CX, [BX]
     mov speedPipe, CX
     inc currentIndex
     cmp currentIndex, 6
